@@ -27,6 +27,7 @@ As a final, we can use Monte Carlo method to estimate software.
     - `propability of pessimistic estimate`
     - `estimate`
 2. Simply run `php estimator.php`
+3. If you want you can set how much can you be inaccurate in your estimation (default is 10%).
 
 As a result you will have a list rows saved on csv file to paste to estimation. During execution, you will see changes
 in final estimate, and number of tries.
