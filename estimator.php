@@ -1,37 +1,71 @@
 <?php
 
 $marginOfFailure = $argv[1] ?? 0.1;
+$tries = $argv[2] ?? 10000;
+
+function estmiate(array $values, float $marginOfFailure): array
+{
+    $rows = [];
+    $summary = 0;
+
+    foreach ($values as $value) {
+
+        $estimation = 0;
+        $optimistic = (int)$value[0];
+        $pesimistic = (int)$value[1];
+        $pesimistic_percentage = ((int)str_replace('%', '', $value[2])) / 100;
+
+        $estimation = is_pesimistic($pesimistic_percentage) ? $pesimistic : $optimistic;
+        $estimationMarginOfFailure = random_int(0, $marginOfFailure * 100) / 100;
+        $finalEstimation = round($estimation * (1 + $estimationMarginOfFailure));
+        $summary += $finalEstimation;
+
+        $payload = [
+            'optimistic' => $optimistic,
+            'pesimistic' => $pesimistic,
+            'percentage' => $pesimistic_percentage,
+            'estimation' => $estimation,
+            'margin_of_failure' => $estimationMarginOfFailure,
+            'final_estimation' => $finalEstimation,
+            'summary' => $summary,
+        ];
+
+        $rows[] = $payload;
+    }
+    return $rows;
+}
+
+
 $res = fopen("estimate.csv", "r");
-$fp = fopen('result-' . time() . '.csv', 'w');
-$rows = [];
-
+$values = [];
 while ($value = fgetcsv($res, null, ",")) {
-    $estimation = 0;
-    $optimistic = (int)$value[0];
-    $pesimistic = (int)$value[1];
-    $pesimistic_percentage = ((int)str_replace('%', '', $value[2])) / 100;
+    $values[] = $value;
+}
 
-    $estimation = is_pesimistic($pesimistic_percentage) ? $pesimistic : $optimistic;
-    $estimationMarginOfFailure = random_int(0, $marginOfFailure * 100) / 100;
+if (!mkdir('results') && !is_dir('results')) {
+    throw new \RuntimeException(sprintf('Directory "%s" was not created', 'result'));
+}
+$fp = fopen('results/' . time() . '.csv', 'w');
+$finalResults = [];
+for ($i = 1; $i <= $tries; $i++) {
+    $results = estmiate($values, $marginOfFailure);
+    foreach ($results as $k => $result) {
+        $finalResults[$k] = $result['final_estimation'] + ($finalResults[$k] ?? 0);
+    }
 
-    $payload = [
-        'optimistic' => $optimistic,
-        'pesimistic' => $pesimistic,
-        'percentage' => $pesimistic_percentage,
-        'estimation' => $estimation,
-        'margin_of_failure' => $estimationMarginOfFailure,
-        'final_estimation' => round($estimation * (1 + $estimationMarginOfFailure)),
-    ];
+    echo "Total in try $i: " . (array_sum($finalResults) / $i) . PHP_EOL;
+}
 
-    $rows[] = $payload;
-
-    fputcsv($fp, [
-        $payload['final_estimation'],
-    ]);
+$totalTime = 0;
+foreach ($finalResults as $k => $result) {
+    $calculation = ceil($result / $tries);
+    fputcsv($fp, [$calculation]);
+    $totalTime += $calculation;
 }
 fclose($fp);
 
-var_dump($rows);
+
+echo 'Total time: ' . $totalTime . 'h';
 
 function is_pesimistic(float $percentage): bool
 {
