@@ -10,7 +10,7 @@ function estmiate(array $values, float $marginOfFailure): array
 
     foreach ($values as $value) {
 
-        $keyBase = random_int(1, count($value) / 3) - 1;
+        $keyBase = (random_int(1, count($value) / 3) - 1) * 3;
 
         $estimation = 0;
         $optimistic = (int)$value[$keyBase + 0];
