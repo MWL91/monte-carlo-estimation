@@ -54,4 +54,4 @@ In that way your estimate.csv should looks more or less like that:
 | --- | --- | --- | --- | --- | --- |
 | 1 | 2 | 0.5 | 1 | 4 | 0.2 |
 
-Algorithm will round one of actors, and use his estimation to calculate time in current scope.
+Algorithm will rand one of actors, and use his estimation to calculate time in current scope.
