@@ -10,10 +10,12 @@ function estmiate(array $values, float $marginOfFailure): array
 
     foreach ($values as $value) {
 
+        $keyBase = random_int(1, count($value) / 3) - 1;
+
         $estimation = 0;
-        $optimistic = (int)$value[0];
-        $pesimistic = (int)$value[1];
-        $pesimistic_percentage = ((int)str_replace('%', '', $value[2])) / 100;
+        $optimistic = (int)$value[$keyBase + 0];
+        $pesimistic = (int)$value[$keyBase + 1];
+        $pesimistic_percentage = ((int)str_replace('%', '', $value[$keyBase + 2])) / 100;
 
         $estimation = is_pesimistic($pesimistic_percentage) ? $pesimistic : $optimistic;
         $estimationMarginOfFailure = random_int(0, $marginOfFailure * 100) / 100;
@@ -42,7 +44,7 @@ while ($value = fgetcsv($res, null, ",")) {
     $values[] = $value;
 }
 
-if (!mkdir('results') && !is_dir('results')) {
+if (!is_dir('results') && !mkdir('results')) {
     throw new \RuntimeException(sprintf('Directory "%s" was not created', 'result'));
 }
 $fp = fopen('results/' . time() . '.csv', 'w');
