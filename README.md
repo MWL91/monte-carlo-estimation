@@ -31,3 +31,27 @@ As a final, we can use Monte Carlo method to estimate software.
 
 As a result you will have a list rows saved on csv file to paste to estimation. During execution, you will see changes
 in final estimate, and number of tries.
+
+## How to add multiple actors estimation
+
+Let's say, that we have not one, but two developers.
+
+One of them prepared this estimation:
+
+| optimistic estimate | pessimistic estimate | propability of pessimistic estimate |
+|-------------------|-------------------|-------------------------------|
+| 1                 | 2                 | 0.5                           |
+
+Second of them prepared this estimation:
+
+| optimistic estimate | pessimistic estimate | propability of pessimistic estimate |
+|-------------------|-------------------|-------------------------------|
+| 1                 | 4                 | 0.2                           |
+
+In that way your estimate.csv should looks more or less like that:
+
+| optimistic estimate | pessimistic estimate | propability of pessimistic estimate | optimistic estimate | pessimistic estimate | propability of pessimistic estimate |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 2 | 0.5 | 1 | 4 | 0.2 |
+
+Algorithm will round one of actors, and use his estimation to calculate time in current scope.
